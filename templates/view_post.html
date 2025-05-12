@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head><title>{{ post.title }}</title></head>
+<body>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Mi Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if session.get('user') %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('create_post') }}">Nuevo Post</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('list_categories') }}">Categorías</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_profile', email=session['user']) }}">Mi Perfil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('register') }}">Registrarse</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Blog</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if session.get('user') %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('create_post') }}">Nuevo Post</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('list_categories') }}">Categorías</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('user_profile', email=session['user']) }}">Mi Perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a></li>
+        {% else %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('register') }}">Registrarse</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+    <h1>{{ post.title }}</h1>
+    <p>{{ post.content }}</p>
+    <small>Autor: <a href="{{ url_for('user_profile', email=post.author) }}">{{ post.author }}</a> | Fecha: {{ post.date }} | Categoría: {{ post.category }}</small>
+    {% if session.get('user') == post.author %}
+    <p>
+        <a href="{{ url_for('edit_post', post_id=post._id) }}">Editar</a> |
+        <form action="{{ url_for('delete_post', post_id=post._id) }}" method="POST" style="display:inline;">
+            <button type="submit">Eliminar</button>
+        </form>
+    </p>
+    {% endif %}
+    
+    <h3>Comentarios</h3>
+    {% for comment in comments %}
+        <div style="margin-left:20px;">
+            <p>{{ comment.content }}</p>
+            <small>Por <a href="{{ url_for('user_profile', email=comment.author) }}">{{ comment.author }}</a> el {{ comment.date }}</small>
+            {% if session.get('user') == comment.author %}
+                <form action="{{ url_for('delete_comment', comment_id=comment._id) }}" method="POST" style="display:inline;">
+                    <button type="submit">Eliminar</button>
+                </form>
+                <a href="{{ url_for('edit_comment', comment_id=comment._id) }}">Editar</a>
+            {% endif %}
+        </div>
+    {% endfor %}
+
+    {% if session.get('user') %}
+    <form method="POST" action="{{ url_for('add_comment', post_id=post._id) }}">
+        <textarea name="content" rows="3" cols="40" required></textarea><br>
+        <input type="submit" value="Comentar">
+    </form>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Inicia sesión</a> para comentar.</p>
+    {% endif %}
+
+<p><a href="{{ url_for('index') }}">Volver</a></p>
+</body>
+</html>

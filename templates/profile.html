@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil de {{ email }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #e9f0f7;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .content-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .content-box h4 {
+            color: #0d6efd;
+        }
+    </style>
+</head>
+<body>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{{ url_for('index') }}">Mi Blog</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if session.get('user') %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('create_post') }}">Nuevo Post</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('list_categories') }}">Categorías</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('user_profile', email=session['user']) }}">Mi Perfil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('logout') }}">Cerrar Sesión</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('login') }}">Iniciar Sesión</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('register') }}">Registrarse</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+    <div class="container mt-4">
+        <div class="section">
+            <h2 class="text-primary">Perfil de {{ email }}</h2>
+        </div>
+
+        <div class="section">
+            <h4 class="text-secondary">Publicaciones</h4>
+            {% if posts %}
+                {% for post in posts %}
+                    <div class="content-box mb-3">
+                        <h5><a href="{{ url_for('view_post', post_id=post._id) }}">{{ post.title }}</a></h5>
+                        <div class="text-muted">{{ post.date }} | Categoría: {{ post.category }}</div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Este usuario no ha publicado artículos aún.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h4 class="text-secondary">Comentarios</h4>
+            {% if comments %}
+                {% for comment in comments %}
+                    <div class="content-box mb-2">
+                        <p>{{ comment.content }}</p>
+                        <small class="text-muted">{{ comment.date }}</small>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted">Este usuario no ha comentado aún.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
